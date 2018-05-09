@@ -1,4 +1,3 @@
 # back-cap
 Backend Capstone while student at NSS
-Ooops
-Maybe not?
+I think I have fixed it...
