@@ -1,8 +1,6 @@
 'use strict';
 
-module.exports.capitalize = str => str.slice(0,1).toUpperCase() + str.slice(1);
-
-module.exports.createBody = ({body}, table) => {
+module.exports.createBody = ({body}, table, opts) => {
     const obj = body;
     obj.TableName = table;
     return obj;
