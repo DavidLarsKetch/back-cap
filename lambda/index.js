@@ -1,5 +1,7 @@
 'use strict';
 
+// Keys reflect ResourcePaths for calling appropriate method
+// with resource path & HTTP method
 const funcs = {
   data: require('./data'),
   device: require('./device'),
@@ -12,17 +14,17 @@ const doc = require('dynamodb-doc');
 const dynamo = new doc.DynamoDB();
 
 exports.handler = (event, context, callback) => {
-    const done = (err, res) => callback(null, {
-      statusCode: err ? '400' : '200',
-      body: err ? err.message : res,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const done = (err, res) => callback(null, {
+    statusCode: err ? '400' : '200',
+    body: err ? err.message : res,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
   const method = event.httpMethod;
 
-  // Removing leading '/', uses the resource name to
+  // Removes leading '/', uses the resource name to
   // call the appropriate module
   const resource = event.resourcePath.slice(1);
 
