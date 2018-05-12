@@ -1,16 +1,23 @@
 #!/bin/bash
-echo -e "\ngenerateSchedule started with $1 as did\n"
+while getopts d:r: opt; do
+	case $opt in
+		d) did=$OPTARG;;
+		r) reps=$([[ "$OPTARG" -gt 0 ]] && echo "$OPTARG" || echo 2 )
 
-did=$1
+	esac
+done
+
+echo -e "\ngenerateSchedule started with $did as did\n"
+
 types=(beer kombucha tempeh yogurt koji wine whiskey cheese vodka sake)
-file="data/schedule.json"
 
+file="$(dirname $0)/data/schedule.json"
 if [ ! -r "$file" ];
 then
 	touch $file
 fi
 
-for ((i=0;i<2;i++));
+for ((i=0;i<$reps;i++));
 do
 	sid=s$RANDOM$RANDOM
 	m=$(( RANDOM % 11 + 1 ))
@@ -31,12 +38,13 @@ do
 		}
 	}"
 
-	curl -f -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//schedule
+	curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//schedule > /dev/null
 	
 	if [ $? -ne 22 ];
 	then
+		echo -e "Created schedule $sid\n"
 		echo -e $json >> $file
-		/bin/bash ./generateData.sh $sid $startDate $endDate
+		/bin/bash ./generateData.sh -s $sid -b $startDate -e $endDate -r 0
 	else
 		echo "Failed curl request"
 	fi
