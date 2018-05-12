@@ -1,14 +1,22 @@
 #!/bin/bash
-echo -e "\nGenerateDevice started with $1 as uid\n"
-uid=$1
-file="data/device.json"
+while getopts u:r: opt; do
+	case $opt in
+		u) uid=$OPTARG;;
+		r) reps=$([[ "$OPTARG" -gt 0 ]] && echo "$OPTARG" || echo 4 )
+
+	esac
+done
+
+echo -e "\nGenerateDevice started with $uid as uid\n"
+
+file="$(dirname $0)/data/device.json"
 if [ ! -r "$file" ];
 then
 	touch $file
 fi
 
-# Generates 4 devices & their schedules
-for ((i=0;i<4;i++)) 
+# Generates $reps devices or 4 if not specified
+for ((i=0;i<$reps;i++)) 
 do
 	did=d$RANDOM$RANDOM
 	json="{
@@ -18,14 +26,14 @@ do
 		}
 	}"
 	
-	curl -fs -X POST -d "$json" --header "Content-Type: application/json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//device
-	
-	if [ $? -eq 22 ];
+	curl -fs -X POST -d "$json" --header "Content-Type: application/json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//device > /dev/null
+	if [ $? -ne 22 ];
 	then
+		echo -e "Created device $did\n"
+		echo -e $json >> $file
+		/bin/bash ./generateSchedule.sh -d "$did" -r 0
+	else
 		echo "Failed curl request"
 		exit
-	else
-		echo -e $json >> $file
-		/bin/bash ./generateSchedule.sh "$did"
 	fi
 done
