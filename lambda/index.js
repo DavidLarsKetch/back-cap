@@ -1,4 +1,6 @@
 'use strict';
+const doc = require('dynamodb-doc');
+const dynamo = new doc.DynamoDB();
 
 // Keys reflect ResourcePaths for calling appropriate method
 // with resource path & HTTP method
@@ -9,9 +11,6 @@ const funcs = {
   user: require('./user')
 };
 
-const doc = require('dynamodb-doc');
-
-const dynamo = new doc.DynamoDB();
 
 exports.handler = (event, context, callback) => {
   const done = (err, res) => callback(null, {
