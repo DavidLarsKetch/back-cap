@@ -1,10 +1,15 @@
 #!/bin/bash
-echo -e "\ngenerateData started with $1 as sid\n"
+while getopts s:b:e:r: opt; do
+	case $opt in
+		s) sid=$OPTARG;;
+		b) startDate=$( date -d "$OPTARG" +"%Y-%m-%dT%H:%M:S");;
+		e) endDate=$( date -d "$OPTARG" +"%Y-%m-%dT%H:%M:S");;
+		r) reps=$([[ "$OPTARG" -gt 0 ]] && echo "$OPTARG" || echo $(( RANDOM % 50 + 50 )) )
+	esac
+done
+echo -e "\ngenerateData started with $sid as sid\n"
 
-sid=$1
-startDate=$2
-endDate=$3
-file="data/data.json"
+file="$(dirname $0)/data/data.json"
 if [[ ! -r "$file" ]];
 then
 	touch $file
@@ -22,24 +27,22 @@ makeStamp() {
 	echo $result
 }
 
-reps=$(( RANDOM % 50 + 50 ))
-
 for ((i=0;i<$reps;i++))
 do
 	temp=$(( RANDOM % 60 + 40 ))
-	stamp=$(makeStamp)
-
+	thisDate=$(makeStamp)
 	json="{
 		\"Item\":{
 			\"Reading\": \"$temp\",
-			\"Timestamp\": \"$stamp\",
+			\"Timestamp\": \"$thisDate\",
 			\"ScheduleId\": \"$sid\"
 		}
 	}"
-	curl -f -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data
+	curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data > /dev/null
 	
 	if [ $? -ne 22 ];
 	then
+		echo -e "Created reading of $temp for schedule $sid\n"
 		echo -e $json >> $file
 	else
 		echo "Failed curl request"
