@@ -1,19 +1,26 @@
 'use strict';
 
 const doc = require('dynamodb-doc');
-
 const dynamo = new doc.DynamoDB();
 
-const { createBody } = require('../httpUtils');
-
-const { updateSchedule } = require('./postSchedule'),
+const { createSchedule } = require('./postSchedule'),
+      { updateSchedule } = require('./putSchedule'),
       { getDeviceById } = require('./getSchedule');
 
 const funcs = {
-  DELETE (e, cb) {return dynamo.deleteItem(createBody(e, "Schedule"), cb)},
-  GET (e, cb) {return dynamo.query(getDeviceById(e.queryStringParameters.DeviceId, "Schedule"), cb)},
-  POST (e, cb) {return dynamo.putItem(updateSchedule(e.body.Item, "Schedule"), cb)},
-  PUT (e, cb) {return dynamo.updateItem(updateSchedule(e.body.Item, "Schedule"), cb)},
+  //TODO: Decide whether to support DELETE
+  // DELETE (e, cb) {
+    // return dynamo.deleteItem(createBody(e, "StukData"), cb)
+  // },
+  GET ({queryStringParameters: {DeviceId}}, cb) {
+    return dynamo.query(getDeviceById(DeviceId, "Schedule"), cb)
+  },
+  POST ({body: {Item}}, cb) {
+    return dynamo.putItem(createSchedule(Item, "Schedule"), cb)
+  },
+  PUT ({body: {Item}}, cb) {
+    return dynamo.updateItem(updateSchedule(Item, "Schedule"), cb)
+  }
 };
 
 module.exports = funcs;
