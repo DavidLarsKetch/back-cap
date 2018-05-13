@@ -1,4 +1,5 @@
 'use strict';
+
 const doc = require('dynamodb-doc');
 const dynamo = new doc.DynamoDB();
 
@@ -8,9 +9,9 @@ const funcs = {
   data: require('./data'),
   device: require('./device'),
   schedule: require('./schedule'),
+  stat: require('./stat'),
   user: require('./user')
 };
-
 
 exports.handler = (event, context, callback) => {
   const done = (err, res) => callback(null, {
