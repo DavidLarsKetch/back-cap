@@ -1,17 +1,19 @@
 <template>
-  <div id="app">
-    <!-- <img src="./assets/logo.png"> -->
-    <temp/>
+  <div id='stuk'>
+    <stats/>
+    <graph/>
   </div>
 </template>
 
 <script>
-import temp from './components/temp.vue'
+import stats from './components/stats.vue'
+import graph from './components/graph.vue'
 
 export default {
-  name: 'app',
+  name: 'stuk',
   components: {
-    temp
+    stats,
+    graph,
   }
 }
 </script>
