@@ -55,12 +55,25 @@ json="{
 
 curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//schedule
 errorCheck $sid
-echo -e "\nCreate schedule $sid\n"
+echo -e "\nCreated schedule $sid\n"
 echo -e "$json" >> "$file"
 
-# Make data
+# Make data in a sine wave
+
+# Sine wave properties & loop counter
+rate=5000
+freq=2
+i=1
+
+calcTemp() {
+	amp=$(awk -v r="$rate" -v f="$freq" -v i="$i" 'BEGIN{print sin(2*atan2(0,-1)*f*(i/r))}')
+	temp=$(echo "$amp * 10 + 70" | bc)
+
+	echo $temp
+}
+
 postData() {
-	temp=$(( RANDOM % 60 + 40 ))
+	temp=$(calcTemp)
 	thisDate=$(date +"%Y-%m-%dT%H:%M:%S") 
 	json="{
 		\"Item\":{
@@ -72,6 +85,15 @@ postData() {
 	curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data
 	errorCheck $temp
 	echo -e "\n"
+	echo "$json" >> "$file"
+
+	if [[ "$i" -ge $rate ]];
+	then
+		i=1
+	else
+		((i++))
+	fi
+
 	postData
 }
 
