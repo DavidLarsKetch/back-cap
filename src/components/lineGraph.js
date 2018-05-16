@@ -1,7 +1,7 @@
 'use strict'
 
 import { Line, mixins } from 'vue-chartjs'
-const { reactiveProp }= mixins
+const { reactiveProp } = mixins
 
 export default {
   name: 'line-graph',
@@ -14,8 +14,8 @@ export default {
           yAxes: [{
             display: true,
             ticks: {
-              suggestedMin: 0,
-              suggestedMax: 120
+              suggestedMin: 32,
+              suggestedMax: 100
             }
           }]
         }

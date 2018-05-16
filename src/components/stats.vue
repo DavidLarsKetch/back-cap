@@ -1,6 +1,6 @@
 <template>
   <div class="temp">
-    <h4 v-if="msg">{{ msg }}</h4>
+    <h4>{{ errorMsg }}</h4>
     <div>
       <h2 v-if="temp">Current: {{ temp }} &#176; F</h2>
       <span v-if="timeLast">Taken at: <b>{{ timeLast }}</b></span>
@@ -18,14 +18,27 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 import axios from 'axios'
 axios.defaults.headers.common['Access-Control-Allow-Origin']
-import moment from 'moment'
+
+import { extractStatsData } from './statsDataExtraction'
 
 export default {
   name: 'stats',
-  data: function () {
+  props: ['scheduleId'],
+  watch: {
+    scheduleId () {
+      this.selectedId = this.scheduleId
+
+      this.getStatsForSchedule()
+      this.recursivceApiCall()
+    }
+  },
+  data () {
     return {
+      selectedId: this.scheduleId,
       temp: null,
       timeLast: null,
       avg: null,
@@ -33,50 +46,37 @@ export default {
       timeMax: null,
       tempMin: null,
       timeMin: null,
-      msg: '',
-      urlStatTable: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//stat?ScheduleId=s2620215963'
+      errorMsg: null,
+      url: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//stat'
     }
   },
-  created: function () {
-// NOTE: Switch these out for updating every .5 seconds
-    this.getStatsForSchedule(this.urlStatTable);
-    // this.recursivceApiCall();
-  },
   methods: {
-    getStatsForSchedule: function (url) {
-      const vm = this;
-      axios.get(url)
-      .then(({status, data: {body: {Items}}}) => {
-// TODO: Remove console.log
-        console.log("Called the API to get data for stats!");
-        if (status !== 200) return vm.msg = 'Not Found!';
-// TODO: Destructure
-        const stats = Items[0];
-
-        vm.avg = stats.TempAvg;
-        vm.temp = stats.LastTemp;
-        vm.timeLast = moment(`${stats.Stamp}-05:00`).format('MMM Do, h:mm:ss a');
-        vm.tempMax = stats.TempMax;
-        vm.timeMax = moment(`${stats.TimestampMax}-05:00`).format('MMM Do, h:mm:ss a');
-        vm.tempMin = stats.TempMin;
-        vm.timeMin = moment(`${stats.TimestampMin}-05:00`).format('MMM Do, h:mm:ss a');
+    getStatsForSchedule () {
+      const vm = this
+      axios.get(`${vm.url}?ScheduleId=${this.selectedId}`)
+      .then(({status, data: { body } }) => {
+        if (status !== 200 || body.errorMessage) return vm.msg = 'Not Found!'
+        const stats = body.Items[0]
+        vm.avg = stats.TempAvg
+        vm.temp = stats.LastTemp
+        vm.timeLast = moment(`${stats.Stamp}-05:00`).format('MMM Do, h:mm:ss a')
+        vm.tempMax = stats.TempMax
+        vm.timeMax = moment(`${stats.TimestampMax}-05:00`).format('MMM Do, h:mm:ss a')
+        vm.tempMin = stats.TempMin
+        vm.timeMin = moment(`${stats.TimestampMin}-05:00`).format('MMM Do, h:mm:ss a')
       })
       .catch((error) => {
         vm.msg = `Here's your stats error: ${error}`
-      });
+      })
     },
-    // recursivceApiCall () {
-    //   const vm = this;
-    //   vm.getStatsForSchedule(vm.urlStatTable);
-    //   setTimeout(function run() {
-    //     vm.getStatsForSchedule(vm.urlStatTable);
-    //     vm.msg = '';
-    //     setTimeout(run, 500);
-    //   }, 500);
-    // }
-  },
-  props: {
-    foo: 'bar'
+    recursivceApiCall () {
+      const vm = this
+      setTimeout(function run() {
+        vm.getStatsForSchedule(this.selectedId)
+        vm.msg = ''
+        setTimeout(run, 1000)
+      }, 1000)
+    }
   }
 }
 </script>
