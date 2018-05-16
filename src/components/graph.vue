@@ -1,13 +1,14 @@
 <template>
   <div class="graph">
-    <h4 v-if="msg">{{ msg }}</h4>
-    <line-graph :chart-data="data"/>
+    <h4 v-if="errorMsg">{{ errorMsg }}</h4>
+    <line-graph v-if="collection" :chart-data="collection"/>
   </div>
 </template>
 
 <script>
 import lineGraph from './lineGraph.js'
 import { formatLineGraphData } from './lineGraphDataExtraction.js'
+
 import axios from 'axios'
 axios.defaults.headers.common['Access-Control-Allow-Origin']
 
@@ -16,39 +17,53 @@ export default {
   components: {
     lineGraph
   },
+  props: ['scheduleId'],
   data () {
     return {
-      msg: '',
-      data: null,
-      urlDataTable: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data?ScheduleId=s2620215963'
+      errorMsg: '',
+      collection: null,
+      selectedId: this.scheduleId,
+      url: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data'
     }
   },
-  created () {
-// NOTE: Switch these out for updating every .5 seconds
-    this.getGraphDataForSchedule(this.urlDataTable);
-    // this.recursivceApiCall();
+  watch: {
+    scheduleId () {
+      const vm = this
+      this.selectedId = this.scheduleId
+      this.collection = null
+      this.getGraphDataForSchedule()
+      this.recursivceApiCall()
+    }
   },
   methods: {
-    getGraphDataForSchedule (url) {
+    getGraphDataForSchedule () {
       const vm = this;
 // TODO: Get Fetch to work with Access-Control-Allow-Origin header
-      axios(url)
-      .then(({status, data: {body: {Items}}}) => {
-// TODO: Remove console.log
-        console.log('Called the API to get data for graphs');
+      axios.get(`${vm.url}?ScheduleId=${vm.selectedId}`)
+      .then(({ status, data: { body } }) => {
+        if (status !== 200 || body.errorMessage) return vm.errorMsg = 'Not Found!'
 
-        if (status !== 200) return vm.msg = 'Not Found!';
-
-        vm.data = formatLineGraphData(Items)
+        vm.collection = formatLineGraphData(body.Items)
       })
       .catch(function(error) {
-        vm.msg = `Here's your graph error: ${error}`;
+        vm.errorMsg = `Here's your graph error: ${error}`
       });
+    },
+    recursivceApiCall () {
+      const vm = this
+      setTimeout(function run() {
+        vm.getGraphDataForSchedule(vm.selectedId)
+        vm.errorMsg = ''
+        setTimeout(run, 1000)
+      }, 1000)
     }
   }
 }
 </script>
 
 <style scoped>
-
+  .graph {
+    margin: 0 auto;
+    max-width: 75vw;
+  }
 </style>
