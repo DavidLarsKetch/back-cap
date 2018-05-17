@@ -1,5 +1,5 @@
 <template lang="pug">
-  span.user
+  .user
     h4.user__title {{ title }}
     select.user__dropdown(@change='userSelected' v-model='userId')
       option.user__dropdown-option(

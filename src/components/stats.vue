@@ -1,14 +1,14 @@
 <template lang="pug">
-  div.stats(v-if='scheduleId')
-    div.stats__wrapper.-current(v-if='temp')
+  .stats(v-if='scheduleId')
+    .stats__wrapper.-current(v-if='temp')
       h2.stats__current Current: {{ temp }} &#176; F
       .stats__time {{ timeLast }}
-    div.stats__wrapper.-avg(v-if='avg')
+    .stats__wrapper.-avg(v-if='avg')
       h2.stats__avg Average: {{ avg }} &#176; F
-    div.stats__wrapper.-highest(v-if='tempMax')
+    .stats__wrapper.-highest(v-if='tempMax')
       h3.stats__highest Highest: {{ tempMax }} &#176; F
       .stats__time {{ timeMax }}
-    div.stats__wrapper.-lowest(v-if='tempMin')
+    .stats__wrapper.-lowest(v-if='tempMin')
       h3.stats__lowest Lowest: {{ tempMin }} &#176; F
       .stats__time {{ timeMin }}
 </template>
@@ -28,7 +28,7 @@ export default {
 
       vm.selectedId = vm.scheduleId
       vm.getStatsForSchedule()
-      // vm.recursivceApiCall()
+      vm.recursivceApiCall()
     }
   },
   data () {
@@ -75,8 +75,8 @@ export default {
       setTimeout(function run() {
         vm.getStatsForSchedule(vm.selectedId)
         vm.msg = ''
-        setTimeout(run, 1000)
-      }, 1000)
+        setTimeout(run, 2000)
+      }, 2000)
     },
     round (n, p) {
       const factor = Math.pow(10, p)

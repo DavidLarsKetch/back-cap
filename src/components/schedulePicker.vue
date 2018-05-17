@@ -1,7 +1,7 @@
 <template lang='pug'>
-  span.schedule
+  .schedule
     h4.schedule__title {{ title }}
-    div.schedule__wrapper-btn(v-if='schedules')
+    .schedule__wrapper-btn(v-if='schedules')
       button.schedule__btn(
         v-for="(schedule, idx) in schedules"
         :key='idx'

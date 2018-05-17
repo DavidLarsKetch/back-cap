@@ -1,5 +1,5 @@
 <template lang="pug">
-  div.new-schedule-form
+  .new-schedule-form
     p New Schedule
     form.new-schedule-form__form
       span Start &amp; End:
@@ -36,7 +36,7 @@
             v-for='ferment in ferments'
             :value='ferment'
           ) {{ ferment }}
-    div.new-schedule-form__results-wrapper
+    .new-schedule-form__results-wrapper
       h4 Start Date:&nbsp;
         span {{ readableStart }}
       h4 End Date:&nbsp;
@@ -46,7 +46,7 @@
       h4 Min Target Temp:&nbsp;
         span.new-schedule-form__output-min {{ min }} &#176; F
       h4 Fermentation Type: {{ type }}
-    div.new-schedule-form__wrapper-btn
+    .new-schedule-form__wrapper-btn
       button.new-schedule-form__btn(
         @click='postNewSchedule'
       ) Submit
