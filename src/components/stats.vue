@@ -19,17 +19,16 @@ import moment from 'moment'
 import axios from 'axios'
 axios.defaults.headers.common['Access-Control-Allow-Origin']
 
-import { extractStatsData } from './statsDataExtraction'
-
 export default {
   name: 'stats',
   props: ['scheduleId'],
   watch: {
     scheduleId () {
-      this.selectedId = this.scheduleId
+      const vm = this
 
-      this.getStatsForSchedule()
-      this.recursivceApiCall()
+      vm.selectedId = vm.scheduleId
+      vm.getStatsForSchedule()
+      // vm.recursivceApiCall()
     }
   },
   data () {
@@ -42,19 +41,20 @@ export default {
       timeMax: null,
       tempMin: null,
       timeMin: null,
-      errorMsg: null,
       url: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//stat'
     }
   },
   methods: {
     getStatsForSchedule () {
       const vm = this
-      axios.get(`${vm.url}?ScheduleId=${this.selectedId}`)
+
+      if (!vm.selectedId) return vm.resetStats()
+
+      axios.get(`${vm.url}?ScheduleId=${vm.selectedId}`)
       .then(({status, data: { body } }) => {
-        if (status !== 200 || body.errorMessage) return vm.msg = 'Not Found!'
-        const stats = body.Items[0]
-        vm.avg = stats.TempAvg
-        vm.temp = stats.LastTemp
+        if (status !== 200 || body.errorMessage) return vm.$emit('error', 'Not Found!')
+        if (!body.Item) return vm.resetStats()
+        const stats = body.Item
 
 //TODO: Still need to figure out a way to assign this to a vm.stats obj instead
 //      of individual properties.
@@ -66,14 +66,14 @@ export default {
         vm.tempMin = vm.round(stats.TempMin, 2)
         vm.timeMin = moment(`${stats.TimestampMin}-05:00`).format('MMM Do, h:mm:ss a')
       })
-      .catch((error) => {
-        vm.msg = `Here's your stats error: ${error}`
+      .catch((err) => {
+        vm.$emit('error', `Stats - ${err}`)
       })
     },
     recursivceApiCall () {
       const vm = this
       setTimeout(function run() {
-        vm.getStatsForSchedule(this.selectedId)
+        vm.getStatsForSchedule(vm.selectedId)
         vm.msg = ''
         setTimeout(run, 1000)
       }, 1000)
@@ -83,6 +83,10 @@ export default {
       let rounded = Math.round(n * factor) / factor
       return rounded % 1 === 0 ? `${rounded}.00` : `${rounded}`.padEnd(5, '0')
     },
+    resetStats() {
+      const vm = this
+      vm.temp = null, vm.timeLast = null, vm.avg = null, vm.tempMax = null,
+      vm.tempMin = null, vm.timeMax = null, vm.timeMin = null
     }
   }
 }
