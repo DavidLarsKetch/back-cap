@@ -15,43 +15,44 @@ export default {
   components: {
     lineGraph
   },
-  props: ['scheduleId'],
+  props: ['scheduleInfo'],
   data () {
     return {
-      errorMsg: '',
       collection: null,
-      selectedId: this.scheduleId,
+      type: null,
+      selectedId: this.scheduleInfo ? this.scheduleInfo.ScheduleId : null,
       url: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data'
     }
   },
   watch: {
-    scheduleId () {
+    scheduleInfo () {
       const vm = this
-      this.selectedId = this.scheduleId
-      this.collection = null
-      this.getGraphDataForSchedule()
-      this.recursivceApiCall()
+      vm.selectedId = this.scheduleInfo ? this.scheduleInfo.ScheduleId : null
+      vm.type = this.scheduleInfo ? this.scheduleInfo.FermentType : null
+      vm.getGraphDataForSchedule()
+      // vm.recursivceApiCall()
     }
   },
   methods: {
     getGraphDataForSchedule () {
       const vm = this;
-// TODO: Get Fetch to work with Access-Control-Allow-Origin header
+      if (!vm.selectedId) return vm.collection = null
+//TODO: Get Fetch to work with Access-Control-Allow-Origin header
       axios.get(`${vm.url}?ScheduleId=${vm.selectedId}`)
       .then(({ status, data: { body } }) => {
-        if (status !== 200 || body.errorMessage) return vm.errorMsg = 'Not Found!'
+        if (status !== 200 || body.errorMessage) return vm.$emit('error', 'Not found!')
 
+//TODO: Data decimation once body.Items is too large of a dataset
         vm.collection = formatLineGraphData(body.Items)
       })
-      .catch(function(error) {
-        vm.errorMsg = `Here's your graph error: ${error}`
+      .catch(err => {
+        vm.$emit('error', `Graph - ${err}`)
       });
     },
     recursivceApiCall () {
       const vm = this
       setTimeout(function run() {
         vm.getGraphDataForSchedule(vm.selectedId)
-        vm.errorMsg = ''
         setTimeout(run, 1000)
       }, 1000)
     }
