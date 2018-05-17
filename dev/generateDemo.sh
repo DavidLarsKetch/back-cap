@@ -79,9 +79,9 @@ i=1
 
 calcTemp() {
 # Calculates a freq of approx. 2
-	freq=$(awk -v seed="$RANDOM" 'BEGIN{srand(seed);print rand() / 5 + 2}')
+	freq=$(awk -v seed="$RANDOM" -v i="$i" 'BEGIN{srand(seed);print rand() / i + 2}')
 
-	amp=$(awk -v r="$rate" -v f="$freq" -v i="$i" 'BEGIN{print sin(2*atan2(0,-1)*f*(i/r))}')
+	amp=$(awk -v r="$rate" -v f="$freq" -v i="$i" 'BEGIN{print sin(2*atan2(0,-1)*(f*(i/r)))}')
 	temp=$(echo "$amp * 10 + ($min + ($max - $min) / 2)" | bc)
 
 	echo $temp
@@ -109,7 +109,8 @@ postData() {
 	else
 		((i++))
 	fi
-
+	
+	sleep 2
 	postData
 }
 
