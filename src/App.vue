@@ -39,14 +39,18 @@
 <script>
 import stats from './components/stats.vue'
 import graph from './components/graph.vue'
+import scheduleInfo from './components/scheduleInfo.vue'
 import schedulePicker from './components/schedulePicker.vue'
 import userPicker from './components/userPicker.vue'
 import devicePicker from './components/devicePicker.vue'
+import newScheduleForm from './components/newScheduleForm.vue'
 
 export default {
   name: 'stuk',
   components: {
+    scheduleInfo,
     schedulePicker,
+    newScheduleForm,
     userPicker,
     devicePicker,
     stats,
@@ -54,9 +58,19 @@ export default {
   },
   data () {
     return {
+      makeNew: false,
       userId: null,
       deviceId: null,
-      scheduleId: null
+      scheduleId: null,
+      scheduleInfo: null,
+      errorMessage: null
+    }
+  },
+  watch: {
+    scheduleId () {
+      if (this.scheduleId) {
+        this.makeNew = false
+      }
     }
   },
   methods: {
@@ -66,8 +80,18 @@ export default {
     updateDevice (id) {
       this.deviceId = id
     },
-    updateSchedule (id) {
-      this.scheduleId = id
+    updateSchedule (schedule) {
+      this.scheduleInfo = schedule ? schedule : null
+      this.scheduleId = schedule ? schedule.ScheduleId : null
+      this.makeNew = false
+    },
+    newScheduleSelected () {
+      this.scheduleId = null
+      this.scheduleInfo = null
+      this.makeNew = true
+    },
+    errorHandler (err) {
+      this.errorMessage = err
     }
   }
 }
