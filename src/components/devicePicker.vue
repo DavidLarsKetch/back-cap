@@ -18,35 +18,41 @@ export default {
   name: "devicePicker",
   props: ['userId'],
   watch: {
-    userId (id) {
+    userId(id) {
+      this.selectedUser = this.userId
       this.$emit('deviceselected', null)
-      this.title = 'Pick a device:'
+      this.title = 'Pick a device'
       this.getUsersDevices(id)
     }
   },
-  data () {
+  data() {
     return {
       title: 'Please pick a user first',
-      errorMsg: '',
+      selectedUser: this.userId,
+      selectedDevice: null,
       url: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//device',
       devices: null
     }
   },
   methods: {
-    deviceSelected (id) {
+    deviceSelected(id) {
+      this.selectedDevice = id
       this.$emit('deviceselected', id)
-      },
-    getUsersDevices (id) {
+    },
+    getUsersDevices() {
       const vm = this
-      vm.deviceId = null
 
-      axios.get(`${vm.url}?UserId=${id}`)
+      if (vm.selectedUser === null) return vm.devices = null
+
+      axios.get(`${vm.url}?UserId=${vm.selectedUser}`)
       .then(({ status, data: { body: { Items } } }) => {
-        if (status !== 200) return vm.errorMsg = 'Devices not found!'
+        if (status !== 200) return vm.$emit('error', 'Devices not found!')
+        if (Items.length === 0) return vm.$emit('error', 'No devices for this user')
+
         vm.devices = Items.map(i => i.DeviceId)
       })
       .catch(err => {
-        vm.errorMsg = `Here's your device error: ${err}!`
+        vm.$this('error', `Device - ${err}!`)
       })
     }
   }
