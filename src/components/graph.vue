@@ -59,9 +59,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
   .graph {
-    margin: 0 auto;
-    max-width: 75vw;
+    border: 1px dashed grey;
+    padding: 0 2rem;
   }
 </style>

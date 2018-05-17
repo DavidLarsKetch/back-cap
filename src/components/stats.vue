@@ -77,6 +77,31 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
+  .stats {
+    display: grid;
+    grid: repeat(4, auto) / auto;
+    padding: 2rem;
 
+    &__wrapper {
+      border: 3px solid black;
+      margin: 1rem auto;
+      padding: 0 3rem;
+    }
+    &__time {
+      margin-bottom: 1rem;
+    }
+    .-avg {
+      background-color: lightgreen;
+    }
+    .-current {
+      background-color: lemonchiffon;
+    }
+    .-highest {
+      background-color: lightsalmon;
+    }
+    .-lowest {
+      background-color: lightblue;
+    }
+  }
 </style>

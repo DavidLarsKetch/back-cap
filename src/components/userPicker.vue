@@ -46,5 +46,15 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
+  .user {
+    &__dropdown {
+      font-family: monospace;
+      margin-bottom: .95rem;
+      min-width: 10vw;
+    }
+    &__title {
+      text-decoration: underline;
+    }
+  }
 </style>

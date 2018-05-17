@@ -73,13 +73,46 @@ export default {
 }
 </script>
 
-<style>
-#stuk {
+<style lang="scss">
+.stuk {
+  box-sizing: border-box;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+
+  button:focus {
+    outline: 0;
+  }
+
+  nav {
+    background-color: gainsboro;
+    border: 3px solid black;
+    display: grid;
+    grid: auto / auto repeat(2, 1fr) auto;
+    padding: 0 10vh;
+  }
+
+  &__error {
+    color: red;
+  }
+  &__card {
+    border: 1px dashed grey;
+    font-size: 1.5rem;
+    margin: 1vw .5vw;
+  }
+  &__cards {
+    display: grid;
+    grid: auto / repeat(3, 1fr);
+  }
+  &__title {
+    font-family: monospace;
+    font-size: 6rem;
+    // background-color: dimgrey;
+    color: dimgrey;
+    margin: auto;
+    // padding: 1rem;
+  }
 }
 </style>

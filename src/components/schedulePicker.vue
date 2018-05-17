@@ -56,5 +56,24 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
+  .schedule {
+    &__btn {
+      background-color: silver;
+      border: 3px solid black;
+      border-bottom: 0;
+      font-family: monospace;
+      margin: 0 .075rem;
+      padding: .5rem;
+    }
+    &__title {
+      text-decoration: underline;
+    }
+  }
+  .-selected {
+    background-color: aliceblue;
+  }
+  .-new {
+    background-color: lightgreen;
+  }
 </style>
