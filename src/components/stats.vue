@@ -55,10 +55,15 @@ export default {
         const stats = body.Items[0]
         vm.avg = stats.TempAvg
         vm.temp = stats.LastTemp
+
+//TODO: Still need to figure out a way to assign this to a vm.stats obj instead
+//      of individual properties.
+        vm.avg = vm.round(stats.TempAvg, 2)
+        vm.temp = vm.round(stats.LastTemp, 4)
         vm.timeLast = moment(`${stats.Stamp}-05:00`).format('MMM Do, h:mm:ss a')
-        vm.tempMax = stats.TempMax
+        vm.tempMax = vm.round(stats.TempMax, 2)
         vm.timeMax = moment(`${stats.TimestampMax}-05:00`).format('MMM Do, h:mm:ss a')
-        vm.tempMin = stats.TempMin
+        vm.tempMin = vm.round(stats.TempMin, 2)
         vm.timeMin = moment(`${stats.TimestampMin}-05:00`).format('MMM Do, h:mm:ss a')
       })
       .catch((error) => {
@@ -72,6 +77,12 @@ export default {
         vm.msg = ''
         setTimeout(run, 1000)
       }, 1000)
+    },
+    round (n, p) {
+      const factor = Math.pow(10, p)
+      let rounded = Math.round(n * factor) / factor
+      return rounded % 1 === 0 ? `${rounded}.00` : `${rounded}`.padEnd(5, '0')
+    },
     }
   }
 }
