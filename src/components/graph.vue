@@ -1,5 +1,5 @@
 <template lang='pug'>
-  div.graph(v-if='collection')
+  .graph(v-if='collection')
     line-graph(:chart-data='collection')
 </template>
 
@@ -30,7 +30,7 @@ export default {
       vm.selectedId = this.scheduleInfo ? this.scheduleInfo.ScheduleId : null
       vm.type = this.scheduleInfo ? this.scheduleInfo.FermentType : null
       vm.getGraphDataForSchedule()
-      // vm.recursivceApiCall()
+      vm.recursivceApiCall()
     }
   },
   methods: {
@@ -53,8 +53,8 @@ export default {
       const vm = this
       setTimeout(function run() {
         vm.getGraphDataForSchedule(vm.selectedId)
-        setTimeout(run, 1000)
-      }, 1000)
+        setTimeout(run, 2000)
+      }, 2000)
     }
   }
 }

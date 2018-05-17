@@ -1,33 +1,33 @@
 <template lang='pug'>
-  div.schedule-info(v-if='scheduleInfo')
+  .schedule-info(v-if='scheduleInfo')
     h2.schedule-info__current-time {{ currentTime }}
-    div.schedule-info__wrapper
-      div.schedule-info__wrapper-time
-        div.schedule-info__start(v-if='startDate')
+    .schedule-info__wrapper
+      .schedule-info__wrapper-time
+        .schedule-info__start(v-if='startDate')
           p
             i Start:
             br
             b {{ startDate }}
-        div.schedule-info__complete(v-if='timeToComplete')
+        .schedule-info__complete(v-if='timeToComplete')
           p
             i Time until done:
             br
             b {{ timeToComplete }}
-        div.schedule-info__end(v-if='endDate')
+        .schedule-info__end(v-if='endDate')
           p
             i End:
             br
             b {{ endDate }}
 
-      div.schedule-info__wrapper-temp(v-if='max')
+      .schedule-info__wrapper-temp(v-if='max')
         h3.schedule-info__temp-title Target
-        div.schedule-info__type(
+        .schedule-info__type(
           v-if='type'
           :class='type'
         )
           b {{ type.slice(0,1).toUpperCase() + type.slice(1) }}
-        div.schedule-info__nums.schedule-info__max {{ max }} &#176; F
-        div.schedule-info__nums.schedule-info__min {{ min }} &#176; F
+        .schedule-info__nums.schedule-info__max {{ max }} &#176; F
+        .schedule-info__nums.schedule-info__min {{ min }} &#176; F
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template lang='pug'>
-  div#stuk.stuk
+  .stuk#stuk
     h2.stuk__error(v-if="errorMessage") {{ errorMessage }}
     nav
       user-picker(
@@ -18,7 +18,7 @@
         @error='errorHandler($event)'
       )
       h1.stuk__title stuk
-    div.stuk__cards
+    .stuk__cards
       new-schedule-form.stuk__card(
         :device-id='deviceId'
         v-if='makeNew === true'

@@ -1,7 +1,7 @@
 <template lang="pug">
   span.device
     h4.device__title {{ title }}
-    div.device__btns-wrapper(v-if='devices')
+    .device__btns-wrapper(v-if='devices')
       button.device__btn(
         v-for='(deviceId, idx) in devices'
         :key='idx'
