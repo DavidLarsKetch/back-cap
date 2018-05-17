@@ -1,8 +1,6 @@
-<template>
-  <div class="graph">
-    <h4 v-if="errorMsg">{{ errorMsg }}</h4>
-    <line-graph v-if="collection" :chart-data="collection"/>
-  </div>
+<template lang='pug'>
+  div.graph(v-if='collection')
+    line-graph(:chart-data='collection')
 </template>
 
 <script>

@@ -1,13 +1,11 @@
-<template lang="html">
-  <span class="user">
-    <h4>{{ title }}</h4>
-    <h3>{{ errorMsg }}</h3>
-    <select class="user__dropdown" @change="userSelected" v-model="userId">
-      <option class="user__dropdown-option" :key="idx" v-for="(user, idx) in users">
-        {{ user.UserId }}
-      </option>
-    </select>
-  </span>
+<template lang="pug">
+  span.user
+    h4.user__title {{ title }}
+    select.user__dropdown(@change='userSelected' v-model='userId')
+      option.user__dropdown-option(
+        v-for='(user, idx) in users'
+        :key='idx'
+      ) {{ user.UserId }}
 </template>
 
 <script>

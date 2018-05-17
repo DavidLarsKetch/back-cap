@@ -1,13 +1,13 @@
-<template lang="html">
-  <span class="device">
-    <h4>{{ title }}</h4>
-    <h3>{{ errorMsg }}</h3>
-    <div class="device__btns-wrapper" v-if="devices">
-      <button class="device__button" @click="deviceSelected(deviceId)" :key="idx" v-for="(deviceId, idx) in devices">
-        {{ deviceId }}
-      </button>
-    </div>
-  </span>
+<template lang="pug">
+  span.device
+    h4.device__title {{ title }}
+    div.device__btns-wrapper(v-if='devices')
+      button.device__btn(
+        v-for='(deviceId, idx) in devices'
+        :key='idx'
+        :class='{"-selected": selectedDevice === deviceId}'
+        @click='deviceSelected(deviceId)'
+      ) {{ deviceId }}
 </template>
 
 <script>

@@ -1,20 +1,16 @@
-<template>
-  <div class="temp">
-    <h4>{{ errorMsg }}</h4>
-    <div>
-      <h2 v-if="temp">Current: {{ temp }} &#176; F</h2>
-      <span v-if="timeLast">Taken at: <b>{{ timeLast }}</b></span>
-    </div>
-    <h3 v-if="avg">Average: {{ avg }} &#176; F</h3>
-    <div>
-      <h3 v-if="tempMax">Highest: {{ tempMax }} &#176; F</h3>
-      <span v-if="timeMax">Taken at: <b>{{ timeMax }}</b></span>
-    </div>
-    <div>
-      <h3 v-if="tempMin">Lowest: {{ tempMin }} &#176; F</h3>
-      <span v-if="timeMin">Taken at: <b>{{ timeMin }}</b></span>
-    </div>
-  </div>
+<template lang="pug">
+  div.stats(v-if='scheduleId')
+    div.stats__wrapper.-current(v-if='temp')
+      h2.stats__current Current: {{ temp }} &#176; F
+      .stats__time {{ timeLast }}
+    div.stats__wrapper.-avg(v-if='avg')
+      h2.stats__avg Average: {{ avg }} &#176; F
+    div.stats__wrapper.-highest(v-if='tempMax')
+      h3.stats__highest Highest: {{ tempMax }} &#176; F
+      .stats__time {{ timeMax }}
+    div.stats__wrapper.-lowest(v-if='tempMin')
+      h3.stats__lowest Lowest: {{ tempMin }} &#176; F
+      .stats__time {{ timeMin }}
 </template>
 
 <script>

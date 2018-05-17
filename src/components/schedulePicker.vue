@@ -1,13 +1,16 @@
-<template lang="html">
-  <span class="schedule">
-    <h4>{{ title }}</h4>
-    <h3>{{ errorMsg }}</h3>
-    <div v-if="schedules" class="schedule__btn-wrapper">
-      <button class="schedule__dropdown-button" @click="scheduleSelected(scheduleId)" :key="idx" v-for="(scheduleId, idx) in schedules">
-        {{ scheduleId }}
-      </button>
-    </div>
-  </span>
+<template lang='pug'>
+  span.schedule
+    h4.schedule__title {{ title }}
+    div.schedule__wrapper-btn(v-if='schedules')
+      button.schedule__btn(
+        v-for="(schedule, idx) in schedules"
+        :key='idx'
+        :class='{"-selected": selectedSchedule === schedule.ScheduleId}'
+        @click="scheduleSelected(schedule)"
+      ) {{ schedule.ScheduleId }}
+      button.schedule__btn.-new(
+        @click="newScheduleSelected"
+      ) New Schedule
 </template>
 
 <script>

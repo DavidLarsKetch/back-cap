@@ -1,25 +1,39 @@
-<template>
-  <div id='stuk'>
-    <nav>
-      <user-picker
-        @userselected="updateUser($event)"
-      />
-      <device-picker
+<template lang='pug'>
+  div#stuk.stuk
+    h2.stuk__error(v-if="errorMessage") {{ errorMessage }}
+    nav
+      user-picker(
+        @userselected='updateUser($event)'
+        @error='errorHandler($event)'
+      )
+      device-picker(
         :user-id="userId"
         @deviceselected="updateDevice($event)"
-      />
-      <schedule-picker
-        :device-id="deviceId"
-        @scheduleselected="updateSchedule($event)"
-        />
-    </nav>
-    <stats
-      :schedule-id="scheduleId"
-    />
-    <graph
-      :schedule-id="scheduleId"
-    />
-  </div>
+        @error='errorHandler($event)'
+      )
+      schedule-picker(
+        :device-id='deviceId'
+        @scheduleselected='updateSchedule($event)'
+        @newscheduleselected='newScheduleSelected'
+        @error='errorHandler($event)'
+      )
+      h1.stuk__title stuk
+    div.stuk__cards
+      new-schedule-form.stuk__card(
+        :device-id='deviceId'
+        v-if='makeNew === true'
+      )
+      schedule-info.stuk__card(
+        :schedule-info='scheduleInfo'
+      )
+      stats.stuk__card(
+        @error='errorHandler($event)'
+        :schedule-id='scheduleId'
+      )
+      graph.stuk__card(
+        @error='errorHandler($event)'
+        :schedule-info='scheduleInfo'
+      )
 </template>
 
 <script>
