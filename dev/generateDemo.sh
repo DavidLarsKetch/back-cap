@@ -43,13 +43,26 @@ sid=s$RANDOM$RANDOM
 startDate=$(date +"%Y-%m-%dT%H:%M:%S")
 endDate=$(date -d "$startDate 7 days" +"%Y-%m-%dT%H:%M:%S")
 typeToPost=${types[${RANDOM:0:1}]}
+
+# For schedule's target range & generating temps on a
+if [[ "$(( RANDOM % 2 ))" -eq 1 ]];
+then
+	max=100
+	min=80
+else
+	max=80
+	min=60
+fi
+
 json="{
 	\"Item\":{
 		\"FermentType\": \"$typeToPost\",
 		\"StartDate\": \"$startDate\",
 		\"EndDate\": \"$endDate\",
 		\"ScheduleId\": \"$sid\",
-		\"DeviceId\": \"$did\"
+		\"DeviceId\": \"$did\",
+		\"TargetMax\": \"$max\",
+		\"TargetMin\": \"$min\"
 	}
 }"
 
@@ -61,7 +74,7 @@ echo -e "$json" >> "$file"
 # Make data in a sine wave
 
 # Sine wave properties & loop counter
-rate=5000
+rate=1000
 i=1
 
 calcTemp() {
@@ -69,7 +82,7 @@ calcTemp() {
 	freq=$(awk -v seed="$RANDOM" 'BEGIN{srand(seed);print rand() / 5 + 2}')
 
 	amp=$(awk -v r="$rate" -v f="$freq" -v i="$i" 'BEGIN{print sin(2*atan2(0,-1)*f*(i/r))}')
-	temp=$(echo "$amp * 15 + 70" | bc)
+	temp=$(echo "$amp * 10 + ($min + ($max - $min) / 2)" | bc)
 
 	echo $temp
 }
