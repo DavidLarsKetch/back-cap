@@ -14,7 +14,7 @@ export default {
           yAxes: [{
             display: true,
             ticks: {
-              suggestedMin: 32,
+              suggestedMin: 50,
               suggestedMax: 100
             }
           }]
