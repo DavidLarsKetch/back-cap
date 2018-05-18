@@ -1,88 +1,72 @@
 #!/bin/bash
-echo -e "Welcome to the stuk demo\n"
-if [ ! $1 ]; then
-	echo -e "Please supply a uid\n"
-	exit
-else
-	uid=$1
-fi
-
+uid=$1
+did=$2
 file="$(dirname $0)/data/demo.json"
+# Generate random ScheudleId
+sid=s$RANDOM$RANDOM
+
+# Sine wave properties & loop counter
+rate=1000
+i=1
+
 if [ ! -r $file ]; then
 	touch $file
 fi
 
-types=(beer kombucha tempeh yogurt koji wine whiskey cheese vodka sake)
-
 errorCheck() {
-	if [ $? -eq 22 ];
+	if [ $1 -eq 22 ];
 	then
-		echo -e "Failed curl request for $1\n"
+		echo -e "Failed curl request for $2\n"
 		exit
 	fi
 }
 
-#Make device
-did=d$RANDOM$RANDOM
-json="{
-	\"Item\":{
-		\"UserId\": \"$uid\",
-		\"DeviceId\": \"$did\"
-	}
-}"
-	
-curl -fs -X POST -d "$json" --header "Content-Type: application/json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//device
+echo -e "Welcome to the stuk demo\n"
 
-errorCheck $did
-
-echo -e "\nCreated device $did\n"
-echo -e "$json" >> $file
-
-# Make schedule
-sid=s$RANDOM$RANDOM
-startDate=$(date +"%Y-%m-%dT%H:%M:%S")
-endDate=$(date -d "$startDate 7 days" +"%Y-%m-%dT%H:%M:%S")
-typeToPost=${types[${RANDOM:0:1}]}
-
-# For schedule's target range & generating temps on a
-if [[ "$(( RANDOM % 2 ))" -eq 1 ]];
+#Make device if not provided
+if [[ -z "$did" ]];
 then
-	max=100
-	min=80
-else
-	max=80
-	min=60
+	did=d$RANDOM$RANDOM
+	json="{
+		\"Item\":{
+			\"UserId\": \"$uid\",
+			\"DeviceId\": \"$did\"
+		}
+	}"
+		
+	curl -fs -X POST -d "$json" --header "Content-Type: application/json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//device
+	
+	errorCheck $? "device"
+	
+	echo -e "\nCreated device $did\n"
+	echo -e "$json" >> $file
 fi
 
+# Make schedule
+# For schedule's target range & generating temps on a
 json="{
 	\"Item\":{
-		\"FermentType\": \"$typeToPost\",
-		\"StartDate\": \"$startDate\",
-		\"EndDate\": \"$endDate\",
 		\"ScheduleId\": \"$sid\",
-		\"DeviceId\": \"$did\",
-		\"TargetMax\": \"$max\",
-		\"TargetMin\": \"$min\"
+		\"DeviceId\": \"$did\"
 	}
 }"
 
 curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//schedule
-errorCheck $sid
+
+errorCheck $? "schedule"
+
 echo -e "\nCreated schedule $sid\n"
 echo -e "$json" >> "$file"
 
 # Make data in a sine wave
 
-# Sine wave properties & loop counter
-rate=1000
-i=1
 
 calcTemp() {
 # Calculates a freq of approx. 2
 	freq=$(awk -v seed="$RANDOM" -v i="$i" 'BEGIN{srand(seed);print rand() / i + 2}')
 
 	amp=$(awk -v r="$rate" -v f="$freq" -v i="$i" 'BEGIN{print sin(2*atan2(0,-1)*(f*(i/r)))}')
-	temp=$(echo "$amp * 10 + ($min + ($max - $min) / 2)" | bc)
+	temp=$(echo "$amp * 10 + (60 + (100 - 60) / 2)" | bc)
 
 	echo $temp
 }
@@ -97,10 +81,12 @@ postData() {
 			\"ScheduleId\": \"$sid\"
 		}
 	}"
-	curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data
-	errorCheck $temp
 
-	echo -e "\n"
+	curl -fs -X POST -H "Content-Type: application/json" -d "$json" https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//data
+
+	errorCheck $? "data"
+
+	echo -e "\nCreated data point $temp"
 	echo "$json" >> "$file"
 
 	if [[ "$i" -ge $rate ]];
