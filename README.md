@@ -1,10 +1,10 @@
 # stuk
 
 > **stuk** _n_., Dutch (_plural_ **stukken**, _diminutive_ **stukje** _n_)
-1. piece, item (of a whole)
-1. play, skit
-1. document (especially official)
-1. (_colloquial_) hottie, babe, attractive person (_of any gender_)
+> 1. piece, item (of a whole)
+> 1. play, skit
+> 1. document (especially official)
+> 1. (_colloquial_) hottie, babe, attractive person (_of any gender_)
 
 Source: [wiktionary.org](https://en.wiktionary.org/wiki/stuk)
 ## Summary
