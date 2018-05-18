@@ -1,7 +1,7 @@
 <template lang='pug'>
   .schedule
     h4.schedule__title {{ title }}
-    .schedule__wrapper-btn(v-if='schedules')
+    .schedule__wrapper-btn(v-if='deviceId')
       button.schedule__btn(
         v-for="(schedule, idx) in schedules"
         :key='idx'
@@ -9,7 +9,8 @@
         @click="scheduleSelected(schedule)"
       ) {{ schedule.ScheduleId }}
       button.schedule__btn.-new(
-        @click="newScheduleSelected"
+        v-if='newScheduleAvailable'
+        @click="newScheduleSelected(true)"
       ) New Schedule
 </template>
 
@@ -24,17 +25,26 @@ export default {
       selectedDevice: this.deviceId,
       selectedSchedule: null,
       title: 'Please pick a device first',
+      newScheduleAvailable: null,
       url: 'https://bpo0hlxopi.execute-api.us-east-1.amazonaws.com/dev//schedule',
       schedules: null
     }
   },
-  props: ['deviceId'],
+  props: ['deviceId', 'makeNew'],
   watch: {
     deviceId() {
       this.selectedDevice = this.deviceId
       this.$emit('scheduleselected', null)
       this.title = 'Pick your device\'s schedule'
-      this.getDevicesSchedule(this.selectedDevice)
+      this.getDevicesSchedule()
+      this.recursivceApiCall()
+    },
+    makeNew() {
+      this.newScheduleAvailable = this.makeNew
+      if (this.newScheduleAvailable === false) {
+        this.getDevicesSchedule()
+        this.recursivceApiCall()
+      }
     }
   },
   methods: {
@@ -44,7 +54,7 @@ export default {
     },
     newScheduleSelected() {
       this.selectedSchedule = null
-      this.$emit('newscheduleselected')
+      this.$emit('newscheduleselected', true)
     },
     getDevicesSchedule() {
       const vm = this
@@ -54,11 +64,26 @@ export default {
       .then(({status, data: {body: { Items } } }) => {
         if (status !== 200) return vm.$emit('error', 'Schedules not found!')
         if (Items.length === 0) return
-        vm.schedules = Items
+
+        vm.schedules = Items.filter(i => i.StartDate)
+
+        const emptySchedules = Items.filter(i => !i.StartDate)
+        if (emptySchedules.length > 0) {
+          vm.newScheduleAvailable = true
+          vm.$emit('emptyschedules', emptySchedules)
+        }
       })
       .catch(err => {
         vm.$emit('error', `Schedule - ${err}!`)
       })
+    },
+    recursivceApiCall () {
+      const vm = this
+      setTimeout(function run() {
+        vm.getDevicesSchedule(vm.selectedId)
+        vm.msg = ''
+        setTimeout(run, 2000)
+      }, 2000)
     }
   }
 }

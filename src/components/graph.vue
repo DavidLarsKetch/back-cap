@@ -40,6 +40,7 @@ export default {
 //TODO: Get Fetch to work with Access-Control-Allow-Origin header
       axios.get(`${vm.url}?ScheduleId=${vm.selectedId}`)
       .then(({ status, data: { body } }) => {
+        console.log(body);
         if (status !== 200 || body.errorMessage) return vm.$emit('error', 'Not found!')
 
 //TODO: Data decimation once body.Items is too large of a dataset
