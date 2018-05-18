@@ -60,7 +60,7 @@ import moment from 'moment'
 
 export default {
   name: "newScheduleForm",
-  props: ['deviceId'],
+  props: ['deviceId', 'emptySchedule'],
   data() {
     return {
       end: null,
@@ -85,24 +85,25 @@ export default {
   methods: {
     postNewSchedule() {
       const vm = this
-      console.log(vm.deviceId);
-      const scheduleId =
-        `s${vm.randomInt(99999999)}`.padEnd(9, vm.randomInt(10))
+      console.log(vm.emptySchedule);
+      const scheduleId = vm.emptySchedule ? vm.emptySchedule : `s${vm.randomInt(999999999)}`.padEnd(9, ()=> vm.randomInt(10))
+
       if (!vm.start || !vm.end || !vm.type || !vm.max || !vm.min) return
+
       const body = {
         DeviceId: vm.deviceId,
         ScheduleId: scheduleId,
-        StartDate: vm.start,
-        EndDate: vm.end,
-        FermentType: vm.type,
+        StartDate: `${vm.start}:00`,
+        EndDate: `${vm.end}:00`,
+        FermentType: vm.type.toLowerCase(),
         TargetMax: vm.max,
         TargetMin: vm.min
       }
 
-      axios.post(vm.url, {Item: body})
+      axios.patch(vm.url, {Item: body})
       .then(resp => {
-// TODO: Emit the proper event to get to the standard view
-        this.$emit('scheduleselected', scheduleId)
+        this.$emit('newscheduleselected', false)
+        this.$emit('scheduleselected', body)
       })
 
     },

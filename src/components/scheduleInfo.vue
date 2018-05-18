@@ -116,7 +116,6 @@ export default {
       padding: 0 1rem;
     }
     &__type {
-      color: white;
       font-size: 2rem;
       margin: auto;
       padding: 2rem .55rem;
@@ -146,13 +145,6 @@ export default {
     &__min {
       background-color: lightblue;
 
-    }
-    .kombucha {
-      background-color: khaki;
-    }
-    .yogurt {
-      background-color: lightcyan;
-      color: black;
     }
   }
 </style>

@@ -13,13 +13,18 @@
       )
       schedule-picker(
         :device-id='deviceId'
+        :make-new='makeNew'
         @scheduleselected='updateSchedule($event)'
-        @newscheduleselected='newScheduleSelected'
+        @emptyschedules='updateEmptySchedules($event)'
+        @newscheduleselected='newScheduleSelected($event)'
         @error='errorHandler($event)'
       )
       h1.stuk__title stuk
     .stuk__cards
       new-schedule-form.stuk__card(
+        @newscheduleselected='newScheduleSelected($event)'
+        @scheduleselected='updateSchedule($event)'
+        :empty-schedule='emptySchedule'
         :device-id='deviceId'
         v-if='makeNew === true'
       )
@@ -63,34 +68,38 @@ export default {
       deviceId: null,
       scheduleId: null,
       scheduleInfo: null,
+      emptySchedule: null,
       errorMessage: null
     }
   },
   watch: {
-    scheduleId () {
+    scheduleId() {
       if (this.scheduleId) {
         this.makeNew = false
       }
     }
   },
   methods: {
-    updateUser (id) {
+    updateUser(id) {
       this.userId = id
     },
-    updateDevice (id) {
+    updateDevice(id) {
       this.deviceId = id
     },
-    updateSchedule (schedule) {
+    updateSchedule(schedule) {
       this.scheduleInfo = schedule ? schedule : null
       this.scheduleId = schedule ? schedule.ScheduleId : null
       this.makeNew = false
     },
-    newScheduleSelected () {
+    newScheduleSelected(bool) {
       this.scheduleId = null
       this.scheduleInfo = null
-      this.makeNew = true
+      this.makeNew = bool
     },
-    errorHandler (err) {
+    updateEmptySchedules(obj) {
+      this.emptySchedule = obj[0].ScheduleId || null
+    },
+    errorHandler(err) {
       this.errorMessage = err
     }
   }
